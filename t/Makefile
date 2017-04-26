@@ -1,6 +1,6 @@
-# the tap.c submodule must be checked out to build and run tests
-
 PROVE ?= prove
+
+GIT ?= git
 
 CFLAGS += -Wall -Wextra -Wpedantic -g
 
@@ -46,6 +46,9 @@ gprof: check
 tests: $(TESTS)
 
 all: tests
+
+tap.c/tap.c:
+	$(GIT) submodule update tap.c
 
 clean:
 	$(RM) $(TESTS)

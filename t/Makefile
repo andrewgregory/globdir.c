@@ -21,7 +21,7 @@ TESTS = \
 
 01-sanity.t: CFLAGS += -pedantic -Werror
 
-%.t: %.c
+%.t: %.c ../globdir.c ../globdir.h globdir_test.h tap.c/tap.c Makefile
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $< $(LDLIBS) -o $@
 
 check: tests

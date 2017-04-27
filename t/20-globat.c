@@ -32,7 +32,7 @@ int main(void) {
 
     tap_is_int(globat(fd, "ba*/", 0, NULL, &globbuf), 0, "globat return");
     tap_is_int(globbuf.gl_pathc, 1, "glob count");
-    tap_is_str(globbuf.gl_pathv[0], "bar", "glob path 1");
+    tap_is_str(globbuf.gl_pathv[0], "bar/", "glob path 1");
     globdirfree(&globbuf);
 
     tap_is_int(globat(fd, "bar/quux", 0, NULL, &globbuf), 0, "globat return");

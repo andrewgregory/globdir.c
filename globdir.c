@@ -180,7 +180,7 @@ int _globat(int fd, char **pattern, int flags,
             /* pattern is not exhausted, but entry is a file: no match */
         } else if(pattern[1][0] == '/') {
             /* pattern requires a directory and is exhausted: match */
-            if(S_ISDIR(sbuf.st_mode) && flags & GLOB_MARK) { strcat(path, "/"); }
+            strcat(path, "/");
             _globdir_append(pglob, strdup(path), flags);
         } else {
             /* pattern is not yet exhausted: check directory contents */

@@ -46,7 +46,7 @@ directory file descriptor C<fd> rather than a string path.
 
  #include <stdio.h>
 
- #include "globdir.h"
+ #include "globdir.c"
 
  int main(int argc, char *argv[]) {
     const char *base_dir, *glob_str;
@@ -73,9 +73,9 @@ directory file descriptor C<fd> rather than a string path.
             return 1;
         default:
             for(i = 0; i < globbuf.gl_pathc; i++) {
-                puts(gl_pathv[i]);
+                puts(globbuf.gl_pathv[i]);
             }
-            globdir_free(&globbuf);
+            globdirfree(&globbuf);
     }
 
     return 0;

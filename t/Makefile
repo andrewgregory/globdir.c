@@ -23,7 +23,7 @@ TESTS = \
 
 01-sanity.t: CFLAGS += -pedantic -Werror
 
-%.t: %.c ../globdir.c ../globdir.h globdir_test.h tap.c/tap.c Makefile
+%.t: %.c ../globdir.c ../globdir.h globdir_test.h ../exttap.c/tap.c Makefile
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $< $(LDLIBS) -o $@
 
 check: tests
@@ -48,9 +48,6 @@ gprof: check
 tests: $(TESTS)
 
 all: tests
-
-tap.c/tap.c:
-	$(GIT) submodule update tap.c
 
 clean:
 	$(RM) $(TESTS)

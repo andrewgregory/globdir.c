@@ -1,4 +1,4 @@
-#include "tap.c/tap.c"
+#include "../ext/tap.c/tap.c"
 
 #include "../globdir.c"
 

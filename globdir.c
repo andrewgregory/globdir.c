@@ -103,13 +103,13 @@ int _globdir_append(globdir_t *pglob, char *path, int flags) {
 
     if(flags & GLOB_DOOFFS) { newsize += pglob->gl_offs; }
 
-    if(newsize < pglob->gl_pathc) { errno = ENOMEM; return -1; }
+    if(newsize < pglob->gl_pathc) { errno = ENOMEM; return GLOB_NOSPACE; }
     if(pglob->gl_pathv) {
         newmem = realloc(pglob->gl_pathv, newsize * sizeof(char*));
     } else {
         newmem = calloc(newsize, sizeof(char*));
     }
-    if(newmem ==  NULL) { return -1; }
+    if(newmem ==  NULL) { return GLOB_NOSPACE; }
 
     pglob->gl_pathv = newmem;
     pglob->gl_pathv[pglob->gl_offs + pglob->gl_pathc] = path;
@@ -175,13 +175,19 @@ int _globat(int fd, char **pattern, int flags,
         if(pattern[1] == NULL) {
             /* pattern is exhausted: match */
             if(S_ISDIR(sbuf.st_mode) && flags & GLOB_MARK) { strcat(path, "/"); }
-            _globdir_append(pglob, strdup(path), flags);
+            if(_globdir_append(pglob, strdup(path), flags) != 0) {
+                closedir(dir);
+                return GLOB_NOSPACE;
+            }
         } else if(!S_ISDIR(sbuf.st_mode)) {
             /* pattern is not exhausted, but entry is a file: no match */
         } else if(pattern[1][0] == '/') {
             /* pattern requires a directory and is exhausted: match */
             strcat(path, "/");
-            _globdir_append(pglob, strdup(path), flags);
+            if(_globdir_append(pglob, strdup(path), flags) != 0) {
+                closedir(dir);
+                return GLOB_NOSPACE;
+            }
         } else {
             /* pattern is not yet exhausted: check directory contents */
             int child = openat(fd, entry->d_name, O_DIRECTORY);
@@ -248,8 +254,7 @@ int globat(int fd, const char *pattern, int flags,
     if(ret != 0 || pglob->gl_pathc > 0) {
         return ret;
     } else if(flags & GLOB_NOCHECK) {
-        _globdir_append(pglob, strdup(pattern), flags);
-        return 0;
+        return _globdir_append(pglob, strdup(pattern), flags);
     } else {
         return GLOB_NOMATCH;
     }

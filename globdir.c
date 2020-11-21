@@ -35,19 +35,19 @@
 
 #include "globdir.h"
 
-char *_globat_strchrnul(const char *haystack, int c) {
+static char *_globat_strchrnul(const char *haystack, int c) {
     while(*haystack && *haystack != c) { haystack++; }
     return (char *)haystack;
 }
 
-void _globdir_freepattern(char **parts) {
+static void _globdir_freepattern(char **parts) {
     char **p;
     if(parts == NULL) { return; }
     for(p = parts; *p != NULL; p++) { free(*p); }
     free(parts);
 }
 
-char **_globdir_split_pattern(const char *pattern) {
+static char **_globdir_split_pattern(const char *pattern) {
     size_t i, count = 1;
     char **parts = NULL;
     const char *c;
@@ -97,7 +97,7 @@ error:
     return NULL;
 }
 
-int _globdir_append(globdir_t *pglob, char *path, int flags) {
+static int _globdir_append(globdir_t *pglob, char *path, int flags) {
     char **newmem;
     size_t newsize = pglob->gl_pathc + 2;
 
@@ -119,11 +119,11 @@ int _globdir_append(globdir_t *pglob, char *path, int flags) {
     return 0;
 }
 
-int _globcmp(const void *p1, const void *p2) {
+static int _globcmp(const void *p1, const void *p2) {
     return strcmp(* (char * const *) p1, * (char * const *) p2);
 }
 
-int _globat(int fd, char **pattern, int flags,
+static int _globat(int fd, char **pattern, int flags,
         int (*errfunc) (const char *epath, int eerrno),
         globdir_t *pglob, const char *base) {
     const char *epath = (base && base[0]) ? base : ".";

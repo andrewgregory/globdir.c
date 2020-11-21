@@ -35,4 +35,8 @@ int globat(int fd, const char *pattern, int flags,
 int globdir(const char *dir, const char *pattern, int flags,
         int (*errfunc) (const char *epath, int eerrno), globdir_t *pglob);
 
+int globdir_str_is_pattern(const char *string, int noescape);
+
+char *globdir_escape_pattern(const char *pattern);
+
 #endif /* GLOBDIR_H */

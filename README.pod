@@ -40,6 +40,30 @@ all flags specified by POSIX and C<GLOB_PERIOD> if defined in C<glob.h>.
 Identical to C<globdir> except the base directory is specified as an open
 directory file descriptor C<fd> rather than a string path.
 
+=item int globdir_str_is_pattern(const char *str, int noescape);
+
+Check if C<str> is a POSIX glob pattern. Backslash escaping will not be
+performed if C<noescape> is true.
+
+=item char *globdir_escape_pattern(const char *pattern);
+
+Return a copy of C<pattern> with all special characters escaped.  The returned
+string needs to be freed by the caller.  This can be used to accomplish
+relative globing with glob(3) as long as C<GLOB_NOESCAPE> or other
+syntax-altering flags (such as glibc's C<GLOB_BRACE>) are not used:
+
+ int globdir(const char *dir, const char *pattern, int flags,
+         int(*errfunc), (const char *epath, int eerrno), glob_t *pglob) {
+     int ret;
+     char *escaped_dir, relpattern[PATH_MAX];
+     if( flags & GLOB_NOESCAPE ) { errno = EINVAL; return GLOB_ABORTED; }
+     if( (escaped_dir = globdir_escape_pattern(dir)) == NULL) { return GLOB_NOSPACE; }
+     if( snprintf(relpattern, PATH_MAX, "%s/%s", escaped_dir, pattern) >= PATH_MAX) { return GLOB_NOSPACE; }
+     ret = glob(relpattern, flags, errfunc, &pglob);
+     free(escaped_pattern);
+     return ret;
+ }
+
 =back
 
 =head1 EXAMPLES

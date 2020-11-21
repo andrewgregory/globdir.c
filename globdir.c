@@ -27,6 +27,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <fnmatch.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -266,6 +267,75 @@ int globdir(const char *dir, const char *pattern, int flags,
     int ret = globat(fd, pattern, flags, errfunc, pglob);
     close(fd);
     return ret;
+}
+
+int mglob(const char *pattern, int flags,
+        int (*errfunc) (const char *epath, int eerrno), globdir_t *pglob) {
+    return globat(AT_FDCWD, pattern, flags, errfunc, pglob);
+}
+
+int globdir_str_is_pattern(const char *string, int noescape) {
+    int escape = !noescape;
+    for(const char *c = string; *c; c++) {
+        switch(*c) {
+            case '\\':
+                if( escape && *(c + 1) ) { c++; }
+                break;
+            case '*':
+            case '?':
+            case '[':
+                return 1;
+        }
+    }
+    return 0;
+}
+
+char *globdir_escape_pattern(const char *pattern) {
+    size_t len, pattern_chars;
+    const char *c;
+    char *escaped, *e;
+
+    if(pattern == NULL) {
+        return NULL;
+    }
+
+    len = strlen(pattern);
+    pattern_chars = 0;
+    for(c = pattern; *c; c++) {
+        switch(*c) {
+            case '\\':
+            case '*':
+            case '?':
+            case '[':
+                pattern_chars++;
+        }
+    }
+
+    if(pattern_chars == 0) {
+        return strdup(pattern);
+    }
+
+    if(SIZE_MAX - len < pattern_chars || !(escaped = malloc(len + pattern_chars))) {
+        errno = ENOMEM;
+        return NULL;
+    }
+
+    for(c = pattern, e = escaped; *c; c++, e++) {
+        switch(*c) {
+            case '\\':
+            case '*':
+            case '?':
+            case '[':
+                *e = '\\';
+                e++;
+                /* fall through */
+            default:
+                *e = *c;
+        }
+    }
+    *e = '\0';
+
+    return escaped;
 }
 
 #endif /* GLOBDIR_C */

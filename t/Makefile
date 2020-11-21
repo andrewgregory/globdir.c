@@ -8,6 +8,8 @@ override CPPFLAGS += -I..
 
 TESTS = \
 		01-sanity.t \
+		10-escape_pattern.t \
+		10-is_pattern.t \
 		10-split_pattern.t \
 		20-globat.t \
 		30-globdir.t \

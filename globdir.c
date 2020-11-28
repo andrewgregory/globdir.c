@@ -269,7 +269,7 @@ int globdir(const char *dir, const char *pattern, int flags,
     return ret;
 }
 
-int mglob(const char *pattern, int flags,
+int globdir_glob(const char *pattern, int flags,
         int (*errfunc) (const char *epath, int eerrno), globdir_t *pglob) {
     return globat(AT_FDCWD, pattern, flags, errfunc, pglob);
 }

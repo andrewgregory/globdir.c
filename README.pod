@@ -40,6 +40,15 @@ all flags specified by POSIX and C<GLOB_PERIOD> if defined in C<glob.h>.
 Identical to C<globdir> except the base directory is specified as an open
 directory file descriptor C<fd> rather than a string path.
 
+=item int globdir_glob(const char *pattern, int flags,
+        int (*errfunc) (const char *epath, int eerrno), globdir_t *pglob);
+
+Direct C<glob> replacement except that C<pglob> is a C<globdir_t> instead of
+C<glob_t> and C<flags> are limited to those specified by POSIX and
+C<GLOB_PERIOD> (if defined on the user's system).  Equivalent to:
+
+ globat(AT_FDCWD, pattern, flags, errfunc, pglob);
+
 =item int globdir_str_is_pattern(const char *str, int noescape);
 
 Check if C<str> is a POSIX glob pattern. Backslash escaping will not be
